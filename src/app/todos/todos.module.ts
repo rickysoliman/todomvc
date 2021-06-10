@@ -2,6 +2,7 @@ import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { TodosComponent } from './components/todos/todos.component';
 import { HeaderComponent } from './components/header/header.component';
+import { TodosService } from "./services/todos.service";
 
 const routes: Routes = [
     {
@@ -15,6 +16,7 @@ const routes: Routes = [
         TodosComponent,
         HeaderComponent
     ],
-    imports: [RouterModule.forChild(routes)]
+    imports: [RouterModule.forChild(routes)],
+    providers: [TodosService]
 })
 export class TodosModule {}
