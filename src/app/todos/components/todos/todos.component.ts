@@ -5,6 +5,7 @@ import { Component } from "@angular/core";
     template: `
         <div class="todoapp">
             <app-todos-header></app-todos-header>
+            <app-todos-main></app-todos-main>
         </div>
     `
 })
