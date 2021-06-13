@@ -8,17 +8,36 @@ import { map } from 'rxjs/operators';
 @Component({
     selector: 'app-todos-main',
     template: `
-        <ul class="todo-list">
-            <li *ngFor="let todo of visibleTodos$ | async">
-                {{ todo.text }}
-            </li>
-        </ul>
+        <section class="main" [ngClass]="{ hidden: noTodoClass$ | async }">
+            <input 
+                id="toggle-all" 
+                class="toggle-all" 
+                type="checkbox" 
+                [checked]="areAllTodosSelected$ | async" 
+                (change)="toggleAllTodos($event)"
+            />
+            <label for="toggle-all">Mark all as completed</label>
+            <ul class="todo-list">
+                <app-todos-todo 
+                    *ngFor="let todo of visibleTodos$ | async"
+                    [todo]="todo"
+                ></app-todos-todo>
+            </ul>
+        </section>
     `
 })
 export class MainComponent{
     visibleTodos$: Observable<TodoInterface[]>;
+    noTodoClass$: Observable<boolean>
+    areAllTodosSelected$: Observable<boolean>
 
     constructor(private todoService: TodosService) {
+        this.areAllTodosSelected$ = this.todoService.todos$.pipe(
+            map(todos => todos.every((todo => todo.isCompleted)))
+        );
+        this.noTodoClass$ = this.todoService.todos$.pipe(
+            map(todos => todos.length === 0)
+        );
         this.visibleTodos$ = combineLatest(
             this.todoService.todos$,
             this.todoService.filter$
@@ -31,5 +50,10 @@ export class MainComponent{
             }
             return todos;
         }));
+    }
+
+    toggleAllTodos(event: Event): void {
+        const target = event.target as HTMLInputElement;
+        this.todoService.toggleAll(target.checked);
     }
 }
